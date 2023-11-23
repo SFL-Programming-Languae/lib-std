@@ -1,0 +1,9 @@
+use std::Byte;
+
+type Char = Byte;
+
+external "Byte_to_Char"
+fun Byte.ascii(): Char;
+
+external "Char_to_Byte"
+fun Char.ascii(): Byte;

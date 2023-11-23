@@ -1,0 +1,52 @@
+use std::errors::{Error,AllocationError};
+use std::collections::Appendable
+use std::Char;
+
+class AllocationError: Error {
+    override
+    throws AllocationError
+    fun toString(sb: mut Appendable<Char>) {
+        sb.append("Allocation Error: Out of memory!") catch!;
+    }
+}
+
+class OutOfBoundsError: Error {
+    const index: Long;
+    const length: Long;
+
+    constructor(
+        indexIn: Long,
+        lengthIn: Long
+    ) {
+        index = indexIn;
+        lenght = lengthIn;
+    }
+
+    override
+    throws AllocationError
+    fun toString(sb: mut Appendable<Char>) {
+        sb.append("Index ") catch!;
+        index.toString(sb) catch!;
+        sb.append(" exceeds length of ") catch!;
+        length.toString(sb) catch!;
+        sb.append('!') catch!;
+    }
+}
+
+class FileWriteError: Error {
+    const file: File;
+
+    constructor(
+        fileIn: File
+    ) {
+        file = fileIn;
+    }
+
+    override
+    throws AllocationError
+    fun toString(sb: mut Appendable<Char>) {
+        sb.append("Could not write to file ") catch!;
+        file.toString(sb) catch!;
+        sb.append('!') catch!;
+    }
+}

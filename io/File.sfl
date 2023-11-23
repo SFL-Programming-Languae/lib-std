@@ -1,0 +1,8 @@
+use std::Closeable;
+use std::Displayable;
+use std::collections::Appendable;
+use std::Char;
+
+class File: Displayable, Appendable<Char>, Closeable {
+
+}

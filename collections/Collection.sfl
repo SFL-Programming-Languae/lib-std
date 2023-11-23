@@ -1,0 +1,9 @@
+use std::collections::Iterable;
+use std::Bool;
+use std::Count;
+
+interface Collection<T>: Iterable<T> {
+    fun contains(val: T): Bool;
+
+    fun size(): Count<T>;
+}

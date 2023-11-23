@@ -1,0 +1,13 @@
+use std::collections::List;
+use std::collections::impl::Vec;
+use std::Char;
+use std::alloc::Allocator;
+use std::errors::AllocationError;
+
+type String = List<Char>;
+
+static
+throws AllocationError
+fun String.create(alloc: Allocator): mut String {
+    return (new mut Vec<Char>(alloc, !)) as String;
+}

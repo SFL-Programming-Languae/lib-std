@@ -1,0 +1,48 @@
+use std::collections::{Iterable,Collection};
+use std::errors::{OutOfBoundsError, AllocationError};
+use std::Closeable;
+use std::Bool;
+use std::Int;
+
+interface List<T>: Collection<T> {
+    throws OutOfBoundsError
+    fun get(index: Int): T;
+
+    mut
+    fun set(index: Int, val: T);
+
+    mut
+    throws AllocationError
+    fun add(val: T);
+
+    /**
+     * Inserts element after index
+     */
+    mut
+    throws AllocationError, IndexOutOfBoundsError
+    fun insert(index: Int, val: T);
+
+    mut
+    throws AllocationError, IndexOutOfBoundsError
+    fun remove(index: Int);
+
+    /**
+     * Returns true if the list got changed
+     */
+    mut
+    throws AllocationError
+    fun remove(val: T): Bool;
+}
+
+/**
+ * Returns the amount of elements removed
+ */
+fun <T> mut List<T>.removeAll(other: Iterable): Int {
+    mut removed: Int = 0;
+    for (x in other) {
+        if (this.remove(x)) {
+            removed ++;
+        }
+    }
+    return removed;
+}

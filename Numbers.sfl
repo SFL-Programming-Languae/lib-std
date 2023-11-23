@@ -1,0 +1,22 @@
+use std::Displayable;
+
+interface Number: Displayable {
+    fun toInt(): Int;
+    fun toDouble(): Double;
+    fun toFloat(): Float;
+    fun toShort(): Short;
+    fun toByte(): Byte;
+    fun toLong(): Long;
+}
+
+type Int: Number;
+
+type Double: Number;
+
+type Float: Number;
+
+type Short: Number;
+
+type Byte: Number;
+
+type Long: Number;

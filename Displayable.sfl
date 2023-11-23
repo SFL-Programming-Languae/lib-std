@@ -1,0 +1,18 @@
+use std::Char;
+use std::collections::Appendable;
+use std::collections::impl::Builder;
+use std::alloc::Allocator;
+use std::strings::String;
+use std::errors::AllocationErrro;
+
+interface Displayable {
+    throws AllocationError
+    fun toString(sb: mut Appendable<Char>);
+}
+
+throws AllocationError
+fun Displayable.toString(alloc: mut Allocator): String {
+    builder = new mut Builder<Char>(alloc);
+    this.toString(builder) catch!;
+    return builder as String;
+}

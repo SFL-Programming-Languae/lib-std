@@ -1,0 +1,11 @@
+use std::errors::AllocationError;
+use std::alloc::Allocation;
+use std::{Bool,Int};
+
+interface Allocator {
+    fun <T> canAllocate(count: Int): Bool;
+
+    mut
+    throws AllocationError
+    fun <T> allocate(count: Int): Allocation<T>;
+}

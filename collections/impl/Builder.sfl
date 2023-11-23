@@ -1,0 +1,106 @@
+use std::collections::Collection;
+use std::collections::Appendable;
+use std::collections::{Iterable, Iterator};
+use std::Bool;
+use std::alloc::{Allocator, Allocation};
+use std::Int;
+use std::Count;
+use std::errors::AllocationError;
+
+class Builder<T>: Collection<T>, Appendable<T> {
+    internal const alloc: mut Allocation<T>;
+    private mut cap: Int;
+    private mut len: Int;
+
+    constructor(
+        allocator: mut Allocator,
+        initCap: Int = 0
+    ) {
+        alloc = allocator.allocate<T>(initCap);
+        cap = initCap;
+        len = 0;
+    }
+
+    override
+    fun iterator(): mut Iterator<T> {
+        return new mut BuilderIterator(this);
+    }
+
+    class BuilderIterator<T>: Iterator<T> {
+        private const b: Builder<T>;
+        private pos: Int;  
+
+        constructor(
+            builderIn: Builder<T>
+        ) {
+            b = builderIn;
+            pos = 0;
+        }
+
+        fun next(): optional T {
+            pos ++;
+            if (pos >= b.len) {
+                return none;
+            }
+            return alloc.read(pos) or none;
+        }
+    }
+
+    override
+    fun size(): Count<T> {
+        return Count::from(len);
+    }
+
+    private
+    mut
+    throws AllocationError
+    fun reserveExtra(c: Int) {
+        if (len + c <= cap) {
+            return;
+        }
+        alloc.resize(len + c) catch!;
+    }
+
+    override
+    mut
+    throws AllocationError
+    fun append(val: T) {
+        reserveExtra(1) catch!;
+        alloc.write(len, val) catch {
+            throw new AllocationError();
+        };
+        len += 1;
+    }
+
+    override
+    mut
+    throws AllocationError
+    fun append(val: Collection<T>) {
+        reserveExtra(val.size()) catch!;
+        for (x in val) {
+            alloc.write(len, x) catch!;
+            len ++;
+        } catch {
+            throw new AllocationError();
+        };
+    }
+
+    override
+    mut
+    throws AllocationError
+    fun append(val: Iterable<T>) {
+        for (x in val) {
+            append(x) catch!;
+        }
+    }
+
+    override
+    fun contains(val: T): Bool {
+        for (x in this) {
+            if (x == val) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

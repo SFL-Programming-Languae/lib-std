@@ -1,0 +1,16 @@
+use std::Byte;
+
+type Bool = Byte;
+
+fun Byte.asBool(): Bool {
+    return (this == 1);
+}
+
+override
+fun Bool.asByte(): Byte {
+    return this as Byte;
+}
+
+const true = 1 as Bool
+
+const false = 0 as Bool

@@ -1,0 +1,178 @@
+use std::alloc::{Allocator,Allocation};
+use std::{Bool,Int};
+use std::errors::{AllocationError,OutOfBoundsError};
+use std::Count;
+use std::Closeable;
+use std::interop::c::VoidPointer as VoidPtr;
+use std::interop::c::Size;
+use std::interop::c::utils::{memcpy};
+use std::_targets as tg;
+use std::interop::c::std as cstd;
+
+#if TARGET_HAS_LIBC
+
+    private
+    external cstd::mallloc
+    fun malloc(bytes: Int): mut VoidPtr;
+
+    private
+    external cstd::free
+    fun free(ptr: mut VoidPtr);
+
+    private
+    external cstd::realloc
+    fun realloc(ptr: mut VoidPtr): mut VoidPtr;
+
+#else if TARGET_IS_POSIX_1
+
+    private
+    labeled "malloc"
+    fun malloc(bytes: Int): mut VoidPtr {
+        alloc = tg::posix::mmap(
+            VoidPtr::NULLPTR,
+            Size::of(Size),
+            tg::posix::PROT_READ | tg::posix::PROT_WRITE,
+            tg::posix::MAP_PRIVATE | tg::posix::MAP_ANONYMOUS,
+            -1,
+            0
+        );
+        alloc.write(0, Size::from(bytes)) catch {
+            return@malloc VoidPtr::NULLPTR;
+        };
+        return alloc.offset<Size>(1);
+    }
+
+    private
+    fun free(ptr: mut VoidPtr) {
+        real = ptr.offset<Size>(-1);
+        size = real.read<Size>(0) or 0;
+        if (size == 0) {
+            return;
+        }
+        tg::posix::munmap(real, size);
+    }
+
+    private
+    labeled "realloc"
+    fun realloc(ptr: mut VoidPtr, bytes: Int): mut VoidPtr {
+        if (ptr == VoidPtr::NULLPTR) {
+            return malloc(bytes);
+        }
+        if (bytes <= 0) {
+            free(ptr);
+            return VoidPtr::NULLPTR;
+        }
+        size = real.read<Size>(-1) catch {
+            return@realloc VoidPtr::NULLPTR;
+        };
+        new = malloc(bytes);
+        memcpy(new, old, size) catch {
+            return@realloc VoidPtr::NULLPTR;
+        };
+        return new;        
+    }
+
+#else
+
+    #panic "memory allocation not implemented for current target!"
+
+#end
+
+class NativeAllocator: Allocator {
+    constructor() {}
+
+    // TODO
+    override
+    fun <T> canAllocate(count: Int): Bool {
+        return true;
+    }
+
+    override
+    mut
+    throws AllocationError
+    fun <T> allocate(count: Int): mut NativeAllocation<T> {
+        bytes = count * Size::of(T);
+        alloc = malloc(bytes);
+        if (alloc == VoidPtr::NULLPTR) {
+            throw new AllocationError();
+        }
+        return new mut NativeAllocation<T>(
+            alloc,
+            Count::from<T>(count),
+            this
+        );
+    }
+
+    class NativeAllocation<T>: Allocation<T> {
+        private mut ptr: mut VoidPtr;        
+        private mut size: Count<T>;
+        private parent: Allocator;
+
+        constructor(
+            ptrIn: mut VoidPtr,
+            countIn: Count<T>,
+            parentIn: Allocator
+        ) {
+            ptr = ptrIn;
+            size = countIn;
+            parent = parentIn;
+        }
+
+        override
+        throws OutOfBoundsError
+        fun read(index: Int): T {
+            if (index > size) {
+                throw new OutOfBoundsError(index, size);
+            }
+            return ptr.read<T>(index) catch {
+                throw new OutOfBoundsError(index, -1);
+            };
+        }
+
+        override
+        mut
+        throws OutOfBoundsError
+        fun write(index: Int, value: T) {
+            if (index > size) {
+                throw new OutOfBoundsError(index, size);
+            }
+            ptr.write(index, value) catch {
+                throw new OutOfBoundsError(index, -1);
+            };
+        }
+
+        override
+        mut
+        throws AllocationError
+        fun resize(count: Int) {
+            ptr = realloc(ptr, Size::of(T) * count);
+            if (ptr == VoidPtr::NULLPTR) {
+                size = Count::from<T>(0);
+                throw new AllocationError();
+            }
+            size = Count::from<T>(count);
+        }
+
+        // TODO
+        override
+        fun canResize(count: Int): Bool {
+            return true;
+        }
+
+        override
+        fun getParent(): Allocator {
+            return parent;
+        }
+
+        override
+        fun size(): Count<T> {
+            return size;
+        }
+
+        override
+        fun close() {
+            size = Count::from<T>(0);
+            free(ptr);
+        }
+    }
+}

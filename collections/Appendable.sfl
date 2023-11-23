@@ -1,0 +1,17 @@
+use std::collections::Collection;
+use std::collections::Iterable;
+use std::errors::AllocationError;
+
+interface Appendable<T>: Collection<T> {
+    mut
+    throws AllocationError;
+    fun append(val: T);
+
+    mut
+    throws AllocationError;
+    fun append(val: Iterable<T>);
+
+    mut
+    throws AllocationError;
+    fun append(val: Collection<T>);
+}

@@ -1,0 +1,52 @@
+use std::String;
+use std::Displayable;
+use std::io::File;
+use std::errors::FileWriteError;
+
+throws FileWriteError, AllocationError
+fun print(str: String) {
+    File::STDOUT.write(str) catch!;
+}
+
+throws FileWriteError, AllocationError
+fun println(str: String) {
+    File::STDOUT.write(str) catch!;
+    File::STDOUT.write('\n') catch!;
+}
+
+throws FileWriteError, AllocationError
+fun print(str: Displayable) {
+    str.toString(File::STDOUT) catch!;
+}
+
+throws FileWriteError, AllocationError
+fun println(str: Displayable) {
+    str.toString(File::STDOUT) catch!;
+    File::STDERR.write('\n') catch!;
+}
+
+fun eprint(str: String) {
+    do {
+        File::STDERR.write(str) catch !;
+    } catch ~;
+}
+
+fun eprintln(str: String) {
+    do {
+        File::STDERR.write(str) catch!;
+        File::STDERR.write('\n') catch!;
+    } catch ~;
+}
+
+fun eprint(str: Displayable) {
+    do {
+        str.toString(File::STDERR) catch!;
+    } catch ~;
+}
+
+fun eprintln(str: Displayable) {
+    do {
+        str.toString(File::STDERR) catch!;
+        File::STDERR.write('\n') catch!;
+    } catch ~;
+}

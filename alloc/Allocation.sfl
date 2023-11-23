@@ -1,0 +1,24 @@
+use std::errors::{AllocationError,OutOfBoundsError};
+use std::{Int,Bool};
+use std::alloc::Allocator;
+use std::Count;
+use std::Closeable;
+
+interface Allocation<T>: Closeable {
+    throws OutOfBoundsError
+    fun read(index: Int): T;
+
+    mut
+    throws OutOfBoundsError
+    fun write(index: Int, value: T);
+
+    mut
+    throws AllocationError
+    fun resize(count: Int);
+
+    fun canResize(count: Int): Bool;
+
+    fun getParent(): Allocator;
+
+    fun size(): Count<T>;
+}

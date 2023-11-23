@@ -1,0 +1,5 @@
+use std::collections::List;
+
+class LinkedList<T>: List<T> {
+    // TODO
+}

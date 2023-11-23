@@ -1,0 +1,5 @@
+use std::Displayable;
+
+interface Error: Displayable {
+
+}

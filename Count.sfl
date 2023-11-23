@@ -1,0 +1,53 @@
+use std::Number;
+use std::{Long,Int,Short,Double,Float,Byte};
+use std::Displayable;
+use std::collections::Appendable;
+use std::Char;
+
+class Count<T>: Number {
+    private val: Long;
+
+    private constructor(valIn: Long) {
+        val = valIn;
+    }
+
+    static
+    fun <T> from<T>(num: Number): Count {
+        return new Count<T>(num.toLong());        
+    }
+
+    override
+    fun toString(sb: mut Appendable<Char>) {
+        val.toString(sb);
+    }
+
+    override
+    fun toLong(): Long {
+        return val;
+    }
+
+    override
+    fun toInt(): Int {
+        return val.toInt();
+    }
+
+    override
+    fun toShort(): Short {
+        return val.toShort();
+    }
+
+    override
+    fun toByte(): Byte {
+        return val.toByte();
+    }
+
+    override
+    fun toFloat(): Float {
+        return val.toFloat();
+    }
+
+    override
+    fun toDouble(): Double {
+        return val.toDouble();
+    }
+}
