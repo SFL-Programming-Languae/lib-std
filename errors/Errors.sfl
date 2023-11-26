@@ -11,8 +11,8 @@ class AllocationError: Error {
 }
 
 class OutOfBoundsError: Error {
-    const index: Long;
-    const length: Long;
+    index: Long;
+    length: Long;
 
     constructor(
         indexIn: Long,
@@ -34,7 +34,7 @@ class OutOfBoundsError: Error {
 }
 
 class FileWriteError: Error {
-    const file: File;
+    file: File;
 
     constructor(
         fileIn: File

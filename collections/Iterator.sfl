@@ -1,3 +1,4 @@
 interface Iterator<T> {
+    mut
     fun next(): optional T;
 }

@@ -106,12 +106,12 @@ class NativeAllocator: Allocator {
     class NativeAllocation<T>: Allocation<T> {
         private mut ptr: mut VoidPtr;        
         private mut size: Count<T>;
-        private parent: Allocator;
+        private parent: mut Allocator;
 
         constructor(
             ptrIn: mut VoidPtr,
             countIn: Count<T>,
-            parentIn: Allocator
+            parentIn: mut Allocator
         ) {
             ptr = ptrIn;
             size = countIn;
@@ -160,7 +160,7 @@ class NativeAllocator: Allocator {
         }
 
         override
-        fun getParent(): Allocator {
+        fun getParent(): mut Allocator {
             return parent;
         }
 

@@ -8,7 +8,7 @@ use std::Count;
 use std::errors::AllocationError;
 
 class Builder<T>: Collection<T>, Appendable<T> {
-    internal const alloc: mut Allocation<T>;
+    internal alloc: mut Allocation<T>;
     private mut cap: Int;
     private mut len: Int;
 
@@ -27,8 +27,8 @@ class Builder<T>: Collection<T>, Appendable<T> {
     }
 
     class BuilderIterator<T>: Iterator<T> {
-        private const b: Builder<T>;
-        private pos: Int;  
+        private b: Builder<T>;
+        private mut pos: Int;  
 
         constructor(
             builderIn: Builder<T>
@@ -37,6 +37,7 @@ class Builder<T>: Collection<T>, Appendable<T> {
             pos = 0;
         }
 
+        mut
         fun next(): optional T {
             pos ++;
             if (pos >= b.len) {

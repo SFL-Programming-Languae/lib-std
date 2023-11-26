@@ -7,5 +7,5 @@ interface Allocator {
 
     mut
     throws AllocationError
-    fun <T> allocate(count: Int): Allocation<T>;
+    fun <T> allocate(count: Int): mut Allocation<T>;
 }

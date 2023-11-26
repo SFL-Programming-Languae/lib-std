@@ -4,5 +4,7 @@ use std::collections::Appendable;
 use std::Char;
 
 class File: Displayable, Appendable<Char>, Closeable {
-
+    static STDIN
+    static STDOUT
+    static STDERR
 }

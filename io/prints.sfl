@@ -4,49 +4,65 @@ use std::io::File;
 use std::errors::FileWriteError;
 
 throws FileWriteError, AllocationError
-fun print(str: String) {
-    File::STDOUT.write(str) catch!;
+fun print(str: String...) {
+    for (x in str) {
+        File::STDOUT.write(x) catch!;
+    }
 }
 
 throws FileWriteError, AllocationError
-fun println(str: String) {
-    File::STDOUT.write(str) catch!;
+fun println(str: String...) {
+    for (x in str) {
+        File::STDOUT.write(x) catch!;
+    }
     File::STDOUT.write('\n') catch!;
 }
 
 throws FileWriteError, AllocationError
-fun print(str: Displayable) {
-    str.toString(File::STDOUT) catch!;
+fun print(dis: Displayable...) {
+    for (x in dis) {
+        x.toString(File::STDOUT) catch!;
+    }
 }
 
 throws FileWriteError, AllocationError
-fun println(str: Displayable) {
-    str.toString(File::STDOUT) catch!;
+fun println(dis: Displayable...) {
+    for (x in dis) {
+        x.toString(File::STDOUT) catch!;
+    }
     File::STDERR.write('\n') catch!;
 }
 
-fun eprint(str: String) {
+fun eprint(str: String...) {
     do {
-        File::STDERR.write(str) catch !;
+        for (x in str) {
+            File::STDERR.write(x) catch!;
+        }
     } catch ~;
 }
 
-fun eprintln(str: String) {
+fun eprintln(str: String...) {
     do {
-        File::STDERR.write(str) catch!;
+        for (x in str) {
+            File::STDERR.write(x) catch!;
+        }
         File::STDERR.write('\n') catch!;
     } catch ~;
 }
 
-fun eprint(str: Displayable) {
+fun eprint(dis: Displayable...) {
     do {
-        str.toString(File::STDERR) catch!;
+        for (x in dis) {
+            x.toString(File::STDERR) catch!;
+        }
     } catch ~;
 }
 
-fun eprintln(str: Displayable) {
+fun eprintln(dis: Displayable...) {
     do {
-        str.toString(File::STDERR) catch!;
+        for (x in dis) {
+            x.toString(File::STDERR) catch!;
+        }
         File::STDERR.write('\n') catch!;
     } catch ~;
 }

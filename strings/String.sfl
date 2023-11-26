@@ -3,11 +3,23 @@ use std::collections::impl::Vec;
 use std::Char;
 use std::alloc::Allocator;
 use std::errors::AllocationError;
+use std::Displayable;
 
-type String = List<Char>;
+class String: abstract List<Char>, Displayable {
+    // yes, a String is also Displayable
+    // why?
+    // look at std::io::print
+    // what happens if someone wants to call it with a mix of Strings and Displayables?
+    // the easiest solution would be to make Strings also Displayable:
+    override
+    throws AllocationError
+    fun toString(sb: mut Appendable<Char>) {
+        sb.append(this);
+    }    
 
-static
-throws AllocationError
-fun String.create(alloc: Allocator): mut String {
-    return (new mut Vec<Char>(alloc, !)) as String;
+    static
+    throws AllocationError
+    fun create(alloc: mut Allocator): mut String {
+        return (new mut Vec<Char>(alloc)) as mut String;
+    }
 }
